@@ -9,12 +9,11 @@
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/filters/extract_indices.h>
 #include <boost/filesystem.hpp>
-#include "SACSegmentation.h"
+#include "CylinderSegmentation.h"
 
-
-SACSegmentation::SACSegmentation(void)
+CylinderSegmentation::CylinderSegmentation(void)
 {}
-SACSegmentation::~SACSegmentation(void)
+CylinderSegmentation::~CylinderSegmentation(void)
 {}
 
 // output objects
@@ -22,7 +21,7 @@ std::vector<pcl::PointCloud<pcl::PointXYZRGBA>::Ptr> inliers_cloudvector;
 std::vector<std::vector<double>> coefficients_vectorvector;
 
 
-void SACSegmentation::UseSACSegmentation(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_input, std::string  cloud_output_path)
+void CylinderSegmentation::UseCylinderSegmentation(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_input, std::string  cloud_output_path)
 {
 	//////Planar Segmentation
 	pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
@@ -33,10 +32,16 @@ void SACSegmentation::UseSACSegmentation(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr
 	// Optional
 	seg.setOptimizeCoefficients (true);
 	// Mandatory
-	seg.setModelType (pcl::SACMODEL_PLANE);
+	//seg.setModelType (pcl::SACMODEL_NORMAL_PLANE);
+	//seg.setMethodType (pcl::SAC_RANSAC);
+	//seg.setDistanceThreshold (0.3); //Höchstabstand, bei dem ein Punkt noch zur Ebene gehören darf
+	//seg.setMaxIterations (1000);
+	seg.setOptimizeCoefficients (true);
+	seg.setModelType (pcl::SACMODEL_CYLINDER);
 	seg.setMethodType (pcl::SAC_RANSAC);
-	seg.setDistanceThreshold (0.3); //Höchstabstand, bei dem ein Punkt noch zur Ebene gehören darf
-	seg.setMaxIterations (1000);
+	seg.setMaxIterations (10000);
+	seg.setDistanceThreshold (0.5);
+	seg.setRadiusLimits (0, 0.2);
 
 	// Create the filtering object
 	pcl::ExtractIndices<pcl::PointXYZRGBA> extract;
@@ -116,18 +121,15 @@ void SACSegmentation::UseSACSegmentation(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr
 }
 
 
-std::vector<std::vector<double>> SACSegmentation::getCoefficients_Vector(){
+std::vector<std::vector<double>> CylinderSegmentation::getCoefficients_Vector(){
 	return coefficients_vectorvector;
 }
 	
-std::vector<pcl::PointCloud<pcl::PointXYZRGBA>::Ptr> SACSegmentation::getInliers_CloudVector(){
+std::vector<pcl::PointCloud<pcl::PointXYZRGBA>::Ptr> CylinderSegmentation::getInliers_CloudVector(){
 	return inliers_cloudvector;
 }
 
 /*
-Quellen:
-	//SACSegmentation, um Punkte in einer Ebene zu finden
-	//http://www.pointclouds.org/documentation/tutorials/planar_segmentation.php
-	//Danach Extract Indices, um diese Punkte in neue datei zu schreiben
-	//http://pointclouds.org/documentation/tutorials/extract_indices.php
-	*/
+Quelle:
+	// http://pointclouds.org/documentation/tutorials/cylinder_segmentation.php#cylinder-segmentation
+*/
