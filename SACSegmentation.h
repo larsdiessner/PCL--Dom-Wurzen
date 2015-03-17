@@ -9,12 +9,12 @@
 #include <pcl/filters/extract_indices.h>
 #include <vector>
 
-class CylinderSegmentation
+class SACSegmentation
 {
 public:
-	CylinderSegmentation(void);
-	~CylinderSegmentation(void);
-	void UseCylinderSegmentation(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_input, std::string  cloud_output_path);
+	SACSegmentation(void);
+	~SACSegmentation(void);
+	void UseSACSegmentation(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_input, std::string  cloud_output_path);
 	std::vector<std::vector<double>> getCoefficients_Vector();
 	std::vector<pcl::PointCloud<pcl::PointXYZRGBA>::Ptr> getInliers_CloudVector();
 };
